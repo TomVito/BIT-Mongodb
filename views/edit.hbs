@@ -1,0 +1,20 @@
+<h1>Dumenu redagavimas</h1>
+
+<form method="POST" action="edit_submit">
+
+    <input type="hidden" name="id" value="{{edit._id}}">
+
+    <p>
+        <label>Pavadinimas</label>
+        <input type="text" name="pavadinimas" value="{{edit.pavadinimas}}">
+    </p>
+    <p>
+        <label>Turinys</label>
+        <textarea name="turinys">{{edit.turinys}}</textarea>
+    </p>
+    <p>
+        <label>Data</label>
+        <input type="date" name="data" value="{{edit.data}}">
+    </p>
+        <input type="submit" value="Redaguoti įrašą">
+</form>
