@@ -21,8 +21,39 @@ router.get('/', (req, res) => {
     // }).collation({locale: "lt"}).sort({pavadinimas : 1}).lean();
 });
 
+router.get('/rusiavimas/desc', (req, res) => {
+
+    IrasaiModel.find( (error, informacija) => {
+        if (!error) {
+
+            informacija.forEach(function(item) {
+                var data = new Date(item.data);
+                item.data = data.toLocaleDateString('lt-LT');
+                item._id = item._id.toString();
+            });
+            res.render('list', {data: informacija});
+        } else {
+            res.send('Ivyko klaida');
+        }
+    }).sort({pavadinimas : -1}).lean();
+    // }).collation({locale: "lt"}).sort({pavadinimas : 1}).lean();
+});
+
 router.get('/pridejimas', (req, res) => {
-    res.render('add');
+    var data = new Date();
+    data = data.toLocaleDateString('lt-LT');
+    res.render('add', {data: data});
+});
+
+router.post('/edit_submit', (req, res) => {
+
+    IrasaiModel.findByIdAndUpdate(req.body.id, {
+        pavadinimas: req.body.pavadinimas,
+        turinys: req.body.turinys,
+        data: req.body.data
+    }).then(data => {
+        res.redirect('/irasai');
+    });
 });
 
 router.get('/edit/:id', (req, res) => {
@@ -41,18 +72,6 @@ router.get('/edit/:id', (req, res) => {
             message: err.message
         });
     });
-    //res.send('edit');
-});
-
-router.post('/edit_submit', (req, res) => {
-
-    IrasaiModel.findByIdAndUpdate(req.body.id, {
-        pavadinimas: req.body.pavadinimas,
-        turinys: req.body.turinys,
-        data: req.body.data
-    });
-
-    res.redirect('/irasai');
 });
 
 router.post('/submit', (req, res) => {
@@ -67,16 +86,30 @@ router.post('/submit', (req, res) => {
     res.redirect('/irasai');
 });
 
-// router.get('/paieska/:s', (req, res) => {
-//     const s = req.params.s;
+router.get('/paieska', (req, res) => {
 
-//     IrasaiModel.find( (error, informacija) => {
-//         if (!error) {
-//             res.send('Klaidu nera');
-//         } else {
-//             res.send('Ivyko klaida');
-//         }
-//     });
-// });
+    res.render('paieska');
+
+});
+
+router.post('/paieska', (req, res) => {
+    const s = req.body.paieska;
+
+    IrasaiModel.find( {$text: {$search: s}}, (error, informacija) => {
+        if (!error) {
+
+            informacija.forEach(function(item) {
+                var data = new Date(item.data);
+                item.data = data.toLocaleDateString('lt-LT');
+                item._id = item._id.toString();
+            });
+            res.render('paieska', {data: informacija});
+        } else {
+            res.send('Ivyko klaida');
+        }
+    }).collation({locale: "lt"}).sort({pavadinimas : 1}).lean();
+});
+
+
 
 module.exports = router;

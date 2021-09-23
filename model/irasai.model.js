@@ -1,17 +1,26 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 var IrasuSchema = new mongoose.Schema({
 
     pavadinimas : {
-        type: String
+        type: String,
+        required: true,
+        trim: true
     },
     turinys : {
-        type: String
+        type: String,
+        required: true
     },
     data : {
-        type: Date
+        type: Date,
+        required: true,
+        validate(value) {
+            if(!validator.isDate(value)) {
+                throw new Error('Neteisingas datos formatas');
+            }
+        }
     }
-
 });
 
 mongoose.model("irasai", IrasuSchema);
