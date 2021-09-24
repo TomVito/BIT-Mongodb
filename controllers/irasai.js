@@ -74,6 +74,24 @@ router.get('/edit/:id', (req, res) => {
     });
 });
 
+router.get('/view/:id', (req, res) => {
+    const id = req.params.id;
+
+    IrasaiModel.findById(id).lean()
+    .then(info => {
+
+        var data = new Date(info.data);
+        info.data = data.toLocaleDateString('lt-LT');
+
+        res.render('view', { data : info});
+    }).catch(err => {
+        res.json({
+            response: 'fail',
+            message: err.message
+        });
+    });
+});
+
 router.post('/submit', (req, res) => {
 
     var irasas = new IrasaiModel();
@@ -109,7 +127,5 @@ router.post('/paieska', (req, res) => {
         }
     }).collation({locale: "lt"}).sort({pavadinimas : 1}).lean();
 });
-
-
 
 module.exports = router;
